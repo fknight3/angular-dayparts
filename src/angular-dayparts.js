@@ -226,15 +226,23 @@ angular.module('angular-dayparts', [])
                 onChangeCallback();
             };
 
-
-
             /**
-             * Remove all selected hours
+             * Select all hours
              */
             $scope.reset = function () {
-                selected = [];
+                var hours = angular.copy($scope.hours);
+                hours.pop();
+                var allHours = [];
+                $scope.days.forEach(function (day) {
+                    hours.forEach(function (hour) {
+                        allHours.push(day.name + '-' + hour);
+                    })
+                });
+                selected = allHours;
                 $element.find('td').each(function(i, el){
-                    $(el).removeClass(klass);
+                    if (_.contains(selected, $(el).data('time'))) {
+                        $(el).addClass(klass);
+                    }
                 });
                 onChangeCallback();
             };
