@@ -104,7 +104,7 @@ angular.module('angular-dayparts', [])
              */
             function setStartCell(el) {
                 startCell = el;
-                isStartSelected = _.contains(selected, el.data('time'));
+                isStartSelected = _.includes(selected, el.data('time'));
             }
 
 
@@ -117,7 +117,7 @@ angular.module('angular-dayparts', [])
                     var el = angular.element(this);
 
                     if (!isStartSelected) {
-                        if (!_.contains(selected, el.data('time'))) {
+                        if (!_.includes(selected, el.data('time'))) {
                             _addCell($(el));
                         }
                     } else {
@@ -175,7 +175,7 @@ angular.module('angular-dayparts', [])
             function repopulate () {
                 selected = _.clone($scope.options.selected);
                 $element.find('td').each(function(i, el){
-                    if (_.contains(selected, $(el).data('time'))) {
+                    if (_.includes(selected, $(el).data('time'))) {
                         $(el).addClass(klass);
                     }
                 });
@@ -194,7 +194,7 @@ angular.module('angular-dayparts', [])
                 $element.find('table tr:eq(' + day.position + ') td:not(:last-child)').each(function(i, el) {
                     if (numSelectedHours === 24) {
                         _removeCell($(el));
-                    } else if (!_.contains(selected, $(el).data('time'))) {
+                    } else if (!_.includes(selected, $(el).data('time'))) {
                         _addCell($(el));
                     }
                 });
@@ -210,7 +210,7 @@ angular.module('angular-dayparts', [])
                 var hour = hour - 1; // previous selected hour
 
                 var numSelectedDays = $scope.days.filter(function(item){
-                    return _.contains(selected, item.name + '-' + hour);
+                    return _.includes(selected, item.name + '-' + hour);
                 }).length;
 
                 $scope.days.forEach(function(day, i){
@@ -218,7 +218,7 @@ angular.module('angular-dayparts', [])
 
                         if (numSelectedDays === 7) {
                             _removeCell($(el));
-                        } else if (!_.contains(selected, $(el).data('time'))) {
+                        } else if (!_.includes(selected, $(el).data('time'))) {
                             _addCell($(el));
                         }
                     });
@@ -242,7 +242,7 @@ angular.module('angular-dayparts', [])
                 });
                 selected = allHours;
                 $element.find('td').each(function(i, el){
-                    if (_.contains(selected, $(el).data('time'))) {
+                    if (_.includes(selected, $(el).data('time'))) {
                         $(el).addClass(klass);
                     }
                 });
