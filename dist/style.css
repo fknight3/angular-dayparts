@@ -2,6 +2,10 @@
     width: 750px;
 }
 
+.dayparts select {
+  margin: 20px 0;
+}
+
 .dayparts table {
     width: 100%;
 }
