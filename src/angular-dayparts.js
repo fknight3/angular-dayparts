@@ -27,6 +27,69 @@ angular.module('angular-dayparts', [])
             var isStartSelected = false;
 
 
+            /*
+             * Populate preset <select> element
+             */
+            $scope.presetItems = [
+              {"value":"week", "label":"All hours and days"},
+              {"value":"weekend", "label":"Weekends (Sat-Sun)"},
+              {"value":"weekdays", "label":"Weekdays (Mon-Fri)"},
+              {"value":"businessHours", "label":"Business Hours (Mon-Fri, 9am-5pm)"},
+              {"value":"eveningHours", "label":"Evenings (6pm-12pm)"},
+              {"value":"custom", "label":"Custom", disabled: true}
+            ];
+
+            $scope.selectedPresetItem = $scope.presetItems[0].value;
+
+            /*
+            * Get week parts
+            */
+            var week = getWeekParts(0, 24);
+            var weekend = getWeekParts(0, 24, [{name: 'Sunday', position: 1}, {name: 'Saturday', position: 7}]);
+            var weekdays = getWeekParts(0, 24, angular.copy($scope.days.slice(1, -1)));
+            var businessHours = getWeekParts(9, 17, angular.copy($scope.days.slice(1, -1)));
+            var eveningHours = getWeekParts(18, 24);
+
+            /*
+            * Shorthand property names (ES2015)
+            * const presets = { week, weekend, weekdays, businessHours, eveningHours }
+            */
+            var presets = {
+              week: week,
+              weekend: weekend,
+              weekdays: weekdays,
+              businessHours: businessHours,
+              eveningHours: eveningHours
+            }
+
+            function getWeekParts (start, end, days = angular.copy($scope.days)) {
+              var hours = _.range(start, end);
+              var dayParts = [];
+              days.forEach(function (day) {
+                hours.forEach(function (hour) {
+                  dayParts.push(day.name + '-' + hour)
+                })
+              })
+              return dayParts;
+            }
+
+            /*
+            * Make grid selections based on selected preset
+            */
+            function setPreset (weekPart) {
+              $element.find('td').each(function(i, el){
+                if (_.includes(weekPart, $(el).data('time'))) {
+                  $(el).addClass(klass);
+                }
+              });
+              $scope.options.onChange(weekPart);
+            }
+
+            $scope.selectedPresetItemChanged = function () {
+              deselect();
+              setPreset(presets[$scope.selectedPresetItem]);
+            }
+
             if ($scope.options.selected) {
                 $timeout(function(){
                     repopulate($scope.options.selected);
@@ -34,7 +97,7 @@ angular.module('angular-dayparts', [])
             }
 
 
-            /**
+            /*
              * When user stop clicking make the callback with selected elements
              */
             function mouseUp() {
@@ -70,6 +133,18 @@ angular.module('angular-dayparts', [])
                         return item.day.name + '-' + item.time;
                     })
 
+                    if (angular.equals(selected, week)) {
+                      $scope.selectedPresetItem = 'week';
+                    } else if (angular.equals(selected, weekend)) {
+                      $scope.selectedPresetItem = 'weekend';
+                    } else if (angular.equals(selected, weekdays)) {
+                      $scope.selectedPresetItem = 'weekdays';
+                    } else if (angular.equals(selected, businessHours)) {
+                      $scope.selectedPresetItem = 'businessHours';
+                    } else if (angular.equals(selected, eveningHours)) {
+                      $scope.selectedPresetItem = 'eveningHours';
+                    }
+
                     $scope.options.onChange(selected);
                 }
             }
@@ -80,9 +155,11 @@ angular.module('angular-dayparts', [])
              * @param {jQuery DOM element}
              */
             function mouseDown(el) {
+                $scope.selectedPresetItem = 'custom';
                 isDragging = true;
                 setStartCell(el);
                 setEndCell(el);
+                onChangeCallback();
             }
 
 
@@ -95,6 +172,7 @@ angular.module('angular-dayparts', [])
                     return;
                 }
                 setEndCell(el);
+                onChangeCallback();
             }
 
 
@@ -179,6 +257,8 @@ angular.module('angular-dayparts', [])
                         $(el).addClass(klass);
                     }
                 });
+                $scope.selectedPresetItem = 'custom';
+                onChangeCallback();
             }
 
 
@@ -198,6 +278,7 @@ angular.module('angular-dayparts', [])
                         _addCell($(el));
                     }
                 });
+                $scope.selectedPresetItem = 'custom';
                 onChangeCallback();
             };
 
@@ -223,6 +304,7 @@ angular.module('angular-dayparts', [])
                         }
                     });
                 });
+                $scope.selectedPresetItem = 'custom';
                 onChangeCallback();
             };
 
@@ -246,6 +328,16 @@ angular.module('angular-dayparts', [])
                 });
                 onChangeCallback();
             };
+
+            /**
+             * Deselect all hours
+             */
+            function deselect () {
+                selected = [];
+                $element.find('td').each(function(i, el) {
+                    $(el).removeClass(klass);
+                });
+              };
 
 
             /**
