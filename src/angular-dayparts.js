@@ -1,5 +1,16 @@
 angular.module('angular-dayparts', [])
-.directive('angularDayparts', ['$window', '$document', '$timeout', function ($window, $document, $timeout) {
+  .provider('angularDaypartsConfig', function () {
+    this.presetItems = [
+      {"value":"week", "label":"All hours and days"},
+      {"value":"weekend", "label":"Weekends (Sat-Sun)"},
+      {"value":"weekdays", "label":"Weekdays (Mon-Fri)"},
+      {"value":"businessHours", "label":"Business Hours (Mon-Fri, 9am-5pm)"},
+      {"value":"eveningHours", "label":"Evenings (6pm-12pm)"},
+      {"value":"custom", "label":"Custom", disabled: true}
+    ];
+    this.$get = _.constant(this);
+  })
+  .directive('angularDayparts', ['$window', '$document', '$timeout', 'angularDaypartsConfig', function ($window, $document, $timeout, angularDaypartsConfig) {
     return {
         restrict: 'E',
         scope: {
@@ -28,18 +39,10 @@ angular.module('angular-dayparts', [])
 
 
             /*
-             * Populate preset <select> element
+             * Populate preset <select> element and set initial value
              */
-            $scope.presetItems = [
-              {"value":"week", "label":"All hours and days"},
-              {"value":"weekend", "label":"Weekends (Sat-Sun)"},
-              {"value":"weekdays", "label":"Weekdays (Mon-Fri)"},
-              {"value":"businessHours", "label":"Business Hours (Mon-Fri, 9am-5pm)"},
-              {"value":"eveningHours", "label":"Evenings (6pm-12pm)"},
-              {"value":"custom", "label":"Custom", disabled: true}
-            ];
-
-            $scope.selectedPresetItem = $scope.presetItems[0].value;
+            $scope.presetItems = angularDaypartsConfig.presetItems;
+            $scope.selectedPresetItem = angularDaypartsConfig.presetItems[0].value;
 
             /*
             * Get week parts
