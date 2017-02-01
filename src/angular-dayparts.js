@@ -8,6 +8,7 @@ angular.module('angular-dayparts', [])
       {"value":"eveningHours", "label":"Evenings (6pm-12pm)"},
       {"value":"custom", "label":"Custom", disabled: true}
     ];
+    this.selectElementClass = '';
     this.$get = _.constant(this);
   })
   .directive('angularDayparts', ['$window', '$document', '$timeout', 'angularDaypartsConfig', function ($window, $document, $timeout, angularDaypartsConfig) {
@@ -37,6 +38,11 @@ angular.module('angular-dayparts', [])
             var selected = [];
             var isStartSelected = false;
 
+
+            /*
+            * Set CSS class on <select> element
+            */
+            $scope.selectElementClass = angularDaypartsConfig.selectElementClass;
 
             /*
              * Populate preset <select> element and set initial value
