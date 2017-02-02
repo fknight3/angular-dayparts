@@ -40,8 +40,8 @@ angular.module('angular-dayparts', [])
 
 
             /*
-            * Set CSS class on <select> element
-            */
+             * Set CSS class on <select> element
+             */
             $scope.selectElementClass = angularDaypartsConfig.selectElementClass;
 
             /*
@@ -51,8 +51,8 @@ angular.module('angular-dayparts', [])
             $scope.selectedPresetItem = angularDaypartsConfig.presetItems[0].value;
 
             /*
-            * Get week parts
-            */
+             * Get week parts
+             */
             var week = getWeekParts(0, 24);
             var weekend = getWeekParts(0, 24, [{name: 'Sunday', position: 1}, {name: 'Saturday', position: 7}]);
             var weekdays = getWeekParts(0, 24, angular.copy($scope.days.slice(1, -1)));
@@ -60,9 +60,9 @@ angular.module('angular-dayparts', [])
             var eveningHours = getWeekParts(18, 24);
 
             /*
-            * Shorthand property names (ES2015)
-            * const presets = { week, weekend, weekdays, businessHours, eveningHours }
-            */
+             * Shorthand property names (ES2015)
+             * const presets = { week, weekend, weekdays, businessHours, eveningHours }
+             */
             var presets = {
               week: week,
               weekend: weekend,
@@ -83,8 +83,8 @@ angular.module('angular-dayparts', [])
             }
 
             /*
-            * Make grid selections based on selected preset
-            */
+             * Make grid selections based on selected preset
+             */
             function setPreset (weekPart) {
               $element.find('td').each(function(i, el){
                 if (_.includes(weekPart, $(el).data('time'))) {
@@ -94,9 +94,17 @@ angular.module('angular-dayparts', [])
               $scope.options.onChange(weekPart);
             }
 
+            /*
+             * If the Custom preset option is enabled, wipe the grid
+             */
             $scope.selectedPresetItemChanged = function () {
-              deselect();
-              setPreset(presets[$scope.selectedPresetItem]);
+              if ($scope.selectedPresetItem === 'custom') {
+                deselect();
+                $scope.options.onChange([]);
+              } else {
+                deselect();
+                setPreset(presets[$scope.selectedPresetItem]);
+              }
             }
 
             if ($scope.options.selected) {
@@ -104,7 +112,6 @@ angular.module('angular-dayparts', [])
                     repopulate($scope.options.selected);
                 }, 100);
             }
-
 
             /*
              * When user stop clicking make the callback with selected elements
